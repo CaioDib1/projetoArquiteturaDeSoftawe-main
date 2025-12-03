@@ -1,0 +1,2 @@
+# projetoArquiteturaDeSoftawe-main
+projeto
