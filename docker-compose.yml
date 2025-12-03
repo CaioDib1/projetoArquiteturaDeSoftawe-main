@@ -97,3 +97,58 @@ networks:
 
 volumes:
   rabbitmq-data:
+
+
+  version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  order-service:
+    build: ./services/order
+    container_name: order-service
+    depends_on:
+      - rabbitmq
+
+  shipping-service:
+    build: ./services/shipping
+    container_name: shipping-service
+    depends_on:
+      - rabbitmq
+
+  contact-service:
+    build: ./services/contact
+    container_name: contact-service
+    depends_on:
+      - rabbitmq
+
+  report-service:
+    build: ./services/report
+    container_name: report-service
+    depends_on:
+      - rabbitmq
+
+volumes:
+  rabbitmq_data:
+
+
+FROM node:18
+
+WORKDIR /app
+
+COPY package.json ./
+RUN npm install
+
+COPY . .
+
+CMD ["node", "app.js"]
